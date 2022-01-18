@@ -25,14 +25,10 @@ from getpass import getpass
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-# AUTH_URL = os.environ.get("AUTH_URL", "https://auth.laurel.informatik.uni-freiburg.de")
-# AUTH_COOKIE = os.environ.get("AUTH_COOKIE", "proglang-auth")
-# EXAM_URL = os.environ.get("EXAM_URL", "https://exam.laurel.informatik.uni-freiburg.de")
-# EXAM_SSH = os.environ.get("EXAM_SSH", "exam.laurel.informatik.uni-freiburg.de")
-AUTH_URL = os.environ.get("AUTH_URL", "http://auth.docker.localhost")
+AUTH_URL = os.environ.get("AUTH_URL", "https://auth.laurel.informatik.uni-freiburg.de")
 AUTH_COOKIE = os.environ.get("AUTH_COOKIE", "proglang-auth")
-EXAM_URL = os.environ.get("EXAM_URL", "http://exam.docker.localhost")
-EXAM_SSH = os.environ.get("EXAM_SSH", "exam.docker.localhost")
+EXAM_URL = os.environ.get("EXAM_URL", "https://exam.laurel.informatik.uni-freiburg.de")
+EXAM_SSH = os.environ.get("EXAM_SSH", "exam.laurel.informatik.uni-freiburg.de")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
