@@ -6,8 +6,10 @@ REQUIRED PYTHON3 LIBRARY: `requests`
 """
 import json
 import os.path
+import signal
 import subprocess
 import sys
+import threading
 import urllib.parse
 import requests
 
@@ -75,6 +77,7 @@ class Store:
 class Session:
     __session: requests.Session = field(default_factory=lambda: requests.Session())
     __username: str = None
+    __greeted: bool = False
 
     def __post_init__(self):
         if AUTH_COOKIE not in self.__session.cookies:
@@ -83,8 +86,10 @@ class Session:
         r = self.__session.get(f"{AUTH_URL}/auth/me")
 
         if r.status_code != 200:
-            print("Hi there!")
-            print("Please login using your university account.")
+            if not self.__greeted:
+                print("Hi there!")
+                print("Please login using your university account.")
+                self.__greeted = True
 
             if AUTH_COOKIE in self.__session.cookies:
                 self.__session.cookies.pop(AUTH_COOKIE)
@@ -238,6 +243,7 @@ class SSH:
 
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, lambda _, __: None)
     # order matters here as global objects get created, most of the time used by objects below them
     if "logout" in sys.argv:
         if os.path.isfile(".cli.store.json"):
@@ -251,3 +257,7 @@ if __name__ == '__main__':
 
     # actual logic and communicating with courses server
     ssh = SSH()  # uses: session, git
+
+    # prevent user from exiting
+    forever = threading.Event()
+    forever.wait()
