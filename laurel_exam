@@ -159,7 +159,7 @@ class SSH:
         if res.status_code == 201:
             print(
                 f"Added public key, you can now connect to the server via: "
-                f"ssh {session.username}@{EXAM_SSH} -o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')}")
+                f"ssh -p 2222 -o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} {session.username}@{EXAM_SSH}")
             exit(0)
 
         if not res.status_code == 200:
@@ -193,7 +193,7 @@ class SSH:
             os.makedirs(os.path.expanduser(f"~/{self.exam_id}"))
 
         mounted, err = self.exec(
-            f"sshfs -o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
+            f"sshfs -p 2222 -o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
             f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id} "
             f"{os.path.expanduser(f'~/{self.exam_id}')}")
         if not mounted:
