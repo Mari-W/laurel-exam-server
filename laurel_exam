@@ -11,6 +11,7 @@ import subprocess
 import sys
 import threading
 import urllib.parse
+
 import requests
 
 from dataclasses import dataclass, field
@@ -24,10 +25,14 @@ from getpass import getpass
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-AUTH_URL = os.environ.get("AUTH_URL", "https://auth.laurel.informatik.uni-freiburg.de")
+# AUTH_URL = os.environ.get("AUTH_URL", "https://auth.laurel.informatik.uni-freiburg.de")
+# AUTH_COOKIE = os.environ.get("AUTH_COOKIE", "proglang-auth")
+# EXAM_URL = os.environ.get("EXAM_URL", "https://exam.laurel.informatik.uni-freiburg.de")
+# EXAM_SSH = os.environ.get("EXAM_SSH", "exam.laurel.informatik.uni-freiburg.de")
+AUTH_URL = os.environ.get("AUTH_URL", "http://auth.docker.localhost")
 AUTH_COOKIE = os.environ.get("AUTH_COOKIE", "proglang-auth")
-EXAM_URL = os.environ.get("EXAM_URL", "https://exam.laurel.informatik.uni-freiburg.de")
-EXAM_SSH = os.environ.get("EXAM_SSH", "exam.laurel.informatik.uni-freiburg.de")
+EXAM_URL = os.environ.get("EXAM_URL", "http://exam.docker.localhost")
+EXAM_SSH = os.environ.get("EXAM_SSH", "exam.docker.localhost")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -102,7 +107,7 @@ class Session:
 
             if r.status_code != 200:
                 if r.status_code == 401:
-                    print("Invalid username or credentials.")
+                    print("Invalid username or password.")
                     return self.__post_init__()
                 else:
                     print("Login failed.")
@@ -166,11 +171,14 @@ class SSH:
             exit(1)
 
         self.exam_id = res.text
-        print(f"Joined {self.exam_id}.")
+        print(f"Participating in exam '{self.exam_id}'.")
+        print("Mounting network directory with exam files.")
         self.mount_folder()
-        print(f"Mounted corresponding server directory.")
+        print("Opening development environment.")
         self.open_vs_code()
-        print(f"Opened vscode in mounted directory.")
+        print("Done!")
+        print("You should now see the code editor with the exam files in it. If not, please contact administrator.")
+        print("Keep this terminal minimized for potential debugging.")
         print(f"Good luck! :)")
         exit(0)
 
