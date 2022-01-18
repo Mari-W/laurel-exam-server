@@ -1,0 +1,12 @@
+# OIDC provider lib
+Authlib
+
+# web (Authlib only currently works with Flask 1.0, keep an eye on it)
+Flask~=1.0
+uWSGI
+
+# utils
+git+https://github.com/Mari-W/gitea-api.git@master
+python-dotenv
+python-telegram-bot
+requests
