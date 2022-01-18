@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """
 Author: Marius Weidner <weidner@cs.uni-freiburg.de>
-REQUIRED PACKAGES: `ssh` `sshfs` `python3.x`
-REQUIRED PYTHON3 LIBRARY: `requests`
+REQUIRED PACKAGES:  `ssh`
+                    `sshfs`
+                    `python3.x`
+REQUIRED OPEN ROUTES:   `https://auth.laurel.informatik.uni-freiburg.de` : Port 443
+                        `https://exam.laurel.informatik.uni-freiburg.de` : Port 443
+                        `ssh://exam.laurel.informatik.uni-freiburg.de` : Port 2223
+REQUIRED PYTHON3 LIBRARY:   `requests`
 """
 import json
 import os.path
