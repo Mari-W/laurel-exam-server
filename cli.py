@@ -7,12 +7,10 @@ REQUIRED PYTHON3 LIBRARY: `requests`
 import json
 import os.path
 import subprocess
+import sys
 import urllib.parse
-from time import sleep
-
 import requests
 
-from argparse import ArgumentParser
 from dataclasses import dataclass, field
 from getpass import getpass
 
@@ -24,10 +22,10 @@ from getpass import getpass
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-AUTH_URL = os.environ.get("AUTH_URL", "http://auth.docker.localhost")
+AUTH_URL = os.environ.get("AUTH_URL", "https://auth.laurel.informatik.uni-freiburg.de")
 AUTH_COOKIE = os.environ.get("AUTH_COOKIE", "proglang-auth")
-EXAM_URL = os.environ.get("EXAM_URL", "http://exam.docker.localhost")
-EXAM_SSH = os.environ.get("EXAM_SSH", "exam.docker.localhost")
+EXAM_URL = os.environ.get("EXAM_URL", "https://exam.laurel.informatik.uni-freiburg.de")
+EXAM_SSH = os.environ.get("EXAM_SSH", "exam.laurel.informatik.uni-freiburg.de")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -85,8 +83,8 @@ class Session:
         r = self.__session.get(f"{AUTH_URL}/auth/me")
 
         if r.status_code != 200:
-            print("Authentication required.")
-            print("Please log in using your university id.")
+            print("Hi there!")
+            print("Please login using your university account.")
 
             if AUTH_COOKIE in self.__session.cookies:
                 self.__session.cookies.pop(AUTH_COOKIE)
@@ -153,7 +151,7 @@ class SSH:
         res = session.get(f"{EXAM_URL}?key={urllib.parse.quote_plus(self.get_public_key())}")
 
         if res.status_code == 201:
-            print(f"added public key, you can now ssh to {EXAM_SSH} as admin")
+            print(f"Added public key, you can now ssh to {EXAM_SSH} as admin")
             exit(0)
 
         if not res.status_code == 200:
@@ -163,12 +161,12 @@ class SSH:
             exit(1)
 
         self.exam_id = res.text
-        print(f"Registered for exam {self.exam_id}.")
+        print(f"Joined {self.exam_id}.")
         self.mount_folder()
-        print(f"Mounted server directory for exam {self.exam_id}.")
+        print(f"Mounted corresponding server directory.")
         self.open_vs_code()
-        print(f"Opening vs code.")
-        print(f"Good luck!")
+        print(f"Opened vscode in mounted directory.")
+        print(f"Good luck! :)")
         exit(0)
 
     def mount_folder(self):
@@ -241,6 +239,9 @@ class SSH:
 
 if __name__ == '__main__':
     # order matters here as global objects get created, most of the time used by objects below them
+    if "logout" in sys.argv:
+        if os.path.isfile(".cli.store.json"):
+            os.remove(".cli.store.json")
 
     # create cli store where authentication token is stored
     store = Store()
