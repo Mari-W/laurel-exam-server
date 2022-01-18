@@ -161,7 +161,9 @@ class SSH:
         res = session.get(f"{EXAM_URL}?key={urllib.parse.quote_plus(self.get_public_key())}")
 
         if res.status_code == 201:
-            print(f"Added public key, you can now ssh to {EXAM_SSH} as admin")
+            print(
+                f"Added public key, you can now connect to the server via: "
+                f"ssh {session.username}@{EXAM_SSH} -o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')}")
             exit(0)
 
         if not res.status_code == 200:
@@ -177,7 +179,8 @@ class SSH:
         print("Opening development environment.")
         self.open_vs_code()
         print("Done!")
-        print("You should now see the code editor with the exam files in it. If not, please contact administrator.")
+        print("You should now see the code editor and exam files inside it.")
+        print("If something seems wrong please immediately contact administrator.")
         print("Keep this terminal minimized for potential debugging.")
         print(f"Good luck! :)")
         exit(0)

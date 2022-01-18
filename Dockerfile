@@ -4,7 +4,7 @@ ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update -y && \
-    apt-get install -y openssh-server python3 python3-pip libpq-dev libpcre3 libpcre3-dev git
+    apt-get install -y openssh-server python3 python3-pip libpq-dev libpcre3 libpcre3-dev git sudo
 
 COPY sshd_config /etc/ssh/sshd_config
 

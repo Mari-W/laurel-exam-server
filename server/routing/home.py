@@ -41,11 +41,13 @@ def home():
 
     user_exists, err = _exec(f"id -u {username}")
 
-    # user does not exist, tho this might be beause of restarts
+    # user does not exist, tho this might be because of restarts
     if not user_exists:
         # create either admin or restricted user
-        user_created, err = _exec(f"useradd -m -r -s /bin/bash -K UID_MIN=2000 {username}") if role == "admin" else \
-            _exec(f"useradd -m -g student -s /bin/bash -K UID_MIN=3000 {username}")
+        user_created, err = _exec(
+            f"useradd -m -p $(openssl passwd -1 \"{Env.get('API_KEY')}\") -s /bin/bash -K UID_MIN=2000 {username} && "
+            f"usermod -aG sudo {username}") if role == "admin" \
+            else _exec(f"useradd -m -g student -s /bin/bash -K UID_MIN=3000 {username}")
         if not user_created:
             return f"failed to create user {username} with message {err}", 500
 
@@ -61,13 +63,16 @@ def home():
                            f"chmod -R 700 /home/{username}")
         if not perms:
             return f"failed to set permissions on {username} home directory with message {err}", 500
+
+        if role == "admin":
+            return "added key to new admin account", 201
     else:
         # add key to authorized_keys file
         _save_key()
 
         # if admin that is it
         if role == "admin":
-            return "added key as admin", 201
+            return "added key to admin account", 201
 
         # copy skel
         if not os.path.isdir(f"/home/{username}/{Env.get('EXAM_ID')}"):
