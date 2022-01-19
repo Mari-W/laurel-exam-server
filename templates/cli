@@ -30,17 +30,18 @@ from getpass import getpass
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-# CONSTS
+# RENDERED
 
-# set static variables
+# auto generated
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-AUTH_URL = os.environ.get("AUTH_URL", "https://auth.laurel.informatik.uni-freiburg.de")
-AUTH_COOKIE = os.environ.get("AUTH_COOKIE", "proglang-auth")
-EXAM_URL = os.environ.get("EXAM_URL", "https://exam.laurel.informatik.uni-freiburg.de")
-EXAM_SSH = os.environ.get("EXAM_SSH", "exam.laurel.informatik.uni-freiburg.de")
-EXAM_SSH_PORT = os.environ.get("EXAM_SSH_PORT", "2223")
+VERSION = "{{version}}"
+AUTH_URL = os.environ.get("AUTH_URL", "{{auth_url}}")
+AUTH_COOKIE = os.environ.get("AUTH_COOKIE", "{{auth_cookie}}")
+EXAM_URL = os.environ.get("EXAM_URL", "{{exam_url}}")
+EXAM_SSH = os.environ.get("EXAM_SSH", "{{exam_ssh}}")
+EXAM_SSH_PORT = os.environ.get("EXAM_SSH_PORT", "{{exam_ssh_port}}")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -154,6 +155,39 @@ class Session:
 
 # ---------------------------------------------------------------------------------------------------------------------
 
+# UPDATER
+
+# requests updated from courses server, applies them if there is one
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+@dataclass
+class Updater:
+    @staticmethod
+    def __post_init__():
+        r = session.get(f"{EXAM_URL}/cli/version")
+        if r.status_code != 200:
+            print("Failed to get current CLI version.")
+            print("Please contact server administrator.")
+            return
+        if r.text != VERSION:
+            print("Detected update.")
+            r = session.get(f"{EXAM_URL}/cli/download")
+            if r.status_code != 200:
+                print("Failed to get CLI update.")
+                print(f"API responded: {r.status_code}: {r.text}")
+                print("Please contact server administrator.")
+                return
+            # inplace update, python magic
+            with open(__file__, "w", encoding="utf-8") as file:
+                file.write(r.text)
+            print("Update successful.")
+            # restart with same arguments, as applied on this script call
+            os.execv(sys.argv[0], sys.argv)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+
 # SSH
 
 # ensures mounted directory
@@ -201,7 +235,7 @@ class SSH:
             print(f"Error: {err}")
             exit(1)
 
-        if not os.path.isdir(os.path.expanduser(f"~/{self.exam_id}")):
+        if not os.path.exists(os.path.expanduser(f"~/{self.exam_id}")):
             os.makedirs(os.path.expanduser(f"~/{self.exam_id}"))
 
         mounted, err = self.exec(
@@ -273,6 +307,9 @@ if __name__ == '__main__':
 
     # session which will ensure you are authorized after it's creation
     session = Session()  # uses: store
+
+    # run updater
+    Updater()
 
     # actual logic and communicating with courses server
     ssh = SSH()  # uses: session, git

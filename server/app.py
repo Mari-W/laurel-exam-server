@@ -8,12 +8,13 @@ from server.error_handling import error_handling
 from server.env import Env
 from server.oauth import init_oauth
 from server.routing.auth import auth_bp
+from server.routing.cli import cli_bp
 from server.routing.home import home_bp
 
 
 def create_app():
     # init server
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder="../templates")
     app.config.update(os.environ)
 
     # some dynamic settings
@@ -25,6 +26,7 @@ def create_app():
     # add routers
     app.register_blueprint(home_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(cli_bp, url_prefix='/cli')
 
     # setup error handling
     error_handling(app)
