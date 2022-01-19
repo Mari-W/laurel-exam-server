@@ -208,24 +208,11 @@ class SSH:
                 f"ssh -p {EXAM_SSH_PORT} -o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} {session.username}@{EXAM_SSH}")
             exit(0)
 
-        if not res.status_code == 200:
+        if res.status_code != 200:
             print(f"Failed to contact exam server at {EXAM_URL}")
             print(f"Server responded with: {res.text}")
             print("Please contact server administrator")
             exit(1)
-
-        self.exam_id = res.text
-        print(f"Participating in exam '{self.exam_id}'.")
-        print("Mounting network directory with exam files.")
-        self.mount_folder()
-        print("Opening development environment.")
-        self.open_vs_code()
-        print("Done!")
-        print("You should now see the code editor and exam files inside it.")
-        print("If something seems wrong please immediately contact administrator.")
-        print("Keep this terminal minimized for potential debugging.")
-        print(f"Good luck! :)")
-        exit(0)
 
     def mount_folder(self):
         sshfs_installed, err = self.exec("dpkg -l | grep sshfs")
@@ -239,7 +226,8 @@ class SSH:
             os.makedirs(os.path.expanduser(f"~/{self.exam_id}"))
 
         mounted, err = self.exec(
-            f"sshfs -p {EXAM_SSH_PORT} -o StrictHostKeyChecking=accept-new -o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
+            f"sshfs -p {EXAM_SSH_PORT} -o StrictHostKeyChecking=accept-new "
+            f"-o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
             f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id} "
             f"{os.path.expanduser(f'~/{self.exam_id}')}")
         if not mounted:
