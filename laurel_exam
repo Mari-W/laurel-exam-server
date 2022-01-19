@@ -17,7 +17,13 @@ import sys
 import threading
 import urllib.parse
 
-import requests
+try:
+    import requests
+except ImportError as e:
+    print("requests is not installed.")
+    print("Please contact administrator.")
+    print(f"Error: {str(e)}")
+    exit(1)
 
 from dataclasses import dataclass, field
 from getpass import getpass
@@ -190,7 +196,7 @@ class SSH:
     def mount_folder(self):
         sshfs_installed, err = self.exec("dpkg -l | grep sshfs")
         if not sshfs_installed:
-            print("SSHFS ist not installed.")
+            print("SSHFS is not installed.")
             print("Please contact administrator.")
             print(f"Error: {err}")
             exit(1)
