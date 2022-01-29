@@ -39,6 +39,14 @@ def home():
                 with open(f"/home/{username}/.ssh/authorized_keys", "a") as authorized_keys:
                     authorized_keys.write(key)
 
+    def _set_dir_perms():
+        return _exec(f"chown -R {username}:{'root' if role == 'admin' else 'student'} /home/{username} && "
+                     f"chmod -R 700 /home/{username}")
+
+    def _copy_exam():
+        if not os.path.isdir(f"/home/{username}/{Env.get('EXAM_ID')}"):
+            shutil.copytree(f"/etc/skel/{Env.get('EXAM_ID')}", f"/home/{username}/{Env.get('EXAM_ID')}")
+
     user_exists, err = _exec(f"id -u {username}")
 
     # user does not exist, tho this might be because of restarts
@@ -55,14 +63,13 @@ def home():
         _save_key()
 
         # if student does not have exam dir copy it
-        if role != "admin" and not os.path.isdir(f"/home/{username}/{Env.get('EXAM_ID')}"):
-            shutil.copytree(f"/etc/skel/{Env.get('EXAM_ID')}", f"/home/{username}/{Env.get('EXAM_ID')}")
+        if role != "admin":
+            _copy_exam()
 
         # set permissions for folders accordingly
-        perms, err = _exec(f"chown -R {username}:{'root' if role == 'admin' else 'student'} /home/{username} && "
-                           f"chmod -R 700 /home/{username}")
+        perms, err = _set_dir_perms()
         if not perms:
-            return f"failed to set permissions on {username} home directory with message {err}", 500
+            return f"failed to set permissions on {username}: {err}", 500
 
         if role == "admin":
             return "added key to new admin account", 201
@@ -75,14 +82,12 @@ def home():
             return "added key to admin account", 201
 
         # copy skel
-        if not os.path.isdir(f"/home/{username}/{Env.get('EXAM_ID')}"):
-            shutil.copytree(f"/etc/skel/{Env.get('EXAM_ID')}", f"/home/{username}/{Env.get('EXAM_ID')}")
+        _copy_exam()
 
         # set perms again
         # set permissions for folders accordingly
-        perms, err = _exec(f"chown -R {username}:{'root' if role == 'admin' else 'student'} /home/{username} && "
-                           f"chmod -R 700 /home/{username}")
+        perms, err = _set_dir_perms()
         if not perms:
-            return f"failed to set permissions on {username} home directory with message {err}", 500
+            return f"failed to set permissions on {username}: {err}", 500
 
     return Env.get("EXAM_ID"), 200
