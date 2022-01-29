@@ -239,9 +239,9 @@ class SSH:
             os.makedirs(os.path.expanduser(f"~/{self.exam_id}"))
 
         mounted, err = self.exec(
-            f"sshfs -p {EXAM_SSH_PORT} -o reconnect,ServerAliveInterval=10,ServerAliveCountMax=2,"
-            f"StrictHostKeyChecking=accept-new "
-            f"-o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
+            f"sshfs -o reconnect,ServerAliveInterval=10,ServerAliveCountMax=2,StrictHostKeyChecking=accept-new,"
+            f"IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')}"
+            f"-p {EXAM_SSH_PORT} "
             f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id} "
             f"{os.path.expanduser(f'~/{self.exam_id}')}")
         if not mounted:
