@@ -47,6 +47,14 @@ def home():
         if not os.path.isdir(f"/home/{username}/{Env.get('EXAM_ID')}"):
             shutil.copytree(f"/etc/skel/{Env.get('EXAM_ID')}", f"/home/{username}/{Env.get('EXAM_ID')}")
 
+    def _save_user(name):
+        if os.path.isfile("/app/users"):
+            with open("/app/users", "r") as i:
+                saved = name not in [it.strip() for it in i.read().split("\n")]
+            if not saved:
+                with open("/app/users", "a") as o:
+                    o.write(name)
+
     user_exists, err = _exec(f"id -u {username}")
 
     # user does not exist, tho this might be because of restarts
@@ -58,6 +66,8 @@ def home():
             else _exec(f"useradd -m -g student -s /bin/bash -K UID_MIN=3000 {username}")
         if not user_created:
             return f"failed to create user {username} with message {err}", 500
+
+        _save_user(username)
 
         # save the provided public key
         _save_key()
