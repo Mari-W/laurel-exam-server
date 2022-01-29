@@ -214,6 +214,19 @@ class SSH:
             print("Please contact server administrator")
             exit(1)
 
+        self.exam_id = res.text
+        print(f"Participating in exam '{self.exam_id}'.")
+        print("Mounting network directory with exam files.")
+        self.mount_folder()
+        print("Opening development environment.")
+        self.open_vs_code()
+        print("Done!")
+        print("You should now see the code editor and exam files inside it.")
+        print("If something seems wrong please immediately contact administrator.")
+        print("Keep this terminal minimized for potential debugging.")
+        print(f"Good luck! :)")
+        exit(0)
+
     def mount_folder(self):
         sshfs_installed, err = self.exec("dpkg -l | grep sshfs")
         if not sshfs_installed:

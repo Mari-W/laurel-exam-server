@@ -13,7 +13,6 @@ def version():
 
 
 @cli_bp.route("/download")
-@authorized_route
 def download():
     cli = render_template("cli", version=Env.get("CLI_VERSION"),
                           auth_url=Env.get("AUTH_URL"), auth_cookie=Env.get("AUTH_COOKIE"),
