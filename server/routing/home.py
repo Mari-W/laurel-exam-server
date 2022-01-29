@@ -53,7 +53,7 @@ def home():
                 saved = name in [it.strip() for it in i.read().split("\n")]
             if not saved:
                 with open("/app/users", "a") as o:
-                    o.write(name)
+                    o.write(f"{name}\n")
 
     user_exists, err = _exec(f"id -u {username}")
 
