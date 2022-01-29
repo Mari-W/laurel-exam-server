@@ -35,12 +35,10 @@ def create_app():
     init_oauth(app)
 
     # init users
-    if os.path.isfile("/app/users"):
-        with open("/app/users", "r") as f:
-            for user in [it.strip() for it in f.read().split("\n") if it.strip()]:
-                subprocess.run(f"useradd -m -g student -s /bin/bash -K UID_MIN=3000 {user}", stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               shell=True,
-                               encoding="utf-8")
+    for user in os.listdir("/app/users/"):
+        subprocess.run(f"useradd -m -g student -s /bin/bash -K UID_MIN=3000 {user}", stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       shell=True,
+                       encoding="utf-8")
 
     return app
