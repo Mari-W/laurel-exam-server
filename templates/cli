@@ -236,7 +236,10 @@ class SSH:
             exit(1)
 
         if not os.path.isdir(os.path.expanduser(f"~/{self.exam_id}")):
-            os.makedirs(os.path.expanduser(f"~/{self.exam_id}"))
+            try:
+                os.makedirs(os.path.expanduser(f"~/{self.exam_id}"))
+            except FileExistsError:
+                unmount, _ = self.exec(f"fusermount -u {os.path.expanduser(f'~/{self.exam_id}')}")
 
         mounted, err = self.exec(
             f"sshfs -o reconnect,ServerAliveInterval=10,ServerAliveCountMax=0,StrictHostKeyChecking=accept-new,"
