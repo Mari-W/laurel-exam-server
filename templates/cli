@@ -235,7 +235,7 @@ class SSH:
             print(f"Error: {err}")
             exit(1)
 
-        if not os.path.exists(os.path.expanduser(f"~/{self.exam_id}")):
+        if not os.path.isdir(os.path.expanduser(f"~/{self.exam_id}")):
             os.makedirs(os.path.expanduser(f"~/{self.exam_id}"))
 
         mounted, err = self.exec(
