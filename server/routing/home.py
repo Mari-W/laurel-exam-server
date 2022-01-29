@@ -50,7 +50,7 @@ def home():
     def _save_user(name):
         if os.path.isfile("/app/users"):
             with open("/app/users", "r") as i:
-                saved = name not in [it.strip() for it in i.read().split("\n")]
+                saved = name in [it.strip() for it in i.read().split("\n")]
             if not saved:
                 with open("/app/users", "a") as o:
                     o.write(name)
