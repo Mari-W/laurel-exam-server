@@ -128,7 +128,7 @@ class Session:
                 return self.__post_init__()
         else:
             self.__username = json.loads(r.text)["username"]
-            print(f"Successfully logged in as {self.__username}.")
+            print(f"Successfully logged in as '{self.__username}'.")
 
     @property
     def username(self):
