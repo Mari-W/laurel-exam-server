@@ -102,7 +102,7 @@ class Session:
         if r.status_code != 200:
             if not self.__greeted:
                 print("Hi there!")
-                print("Please login using your university account.")
+                print("Please log in using your university account.")
                 self.__greeted = True
 
             if AUTH_COOKIE in self.__session.cookies:
@@ -125,10 +125,10 @@ class Session:
                     exit(1)
             else:
                 store["AUTH_COOKIE"] = self.__session.cookies.get(AUTH_COOKIE)
-                print("Login successful.")
                 return self.__post_init__()
         else:
             self.__username = json.loads(r.text)["username"]
+            print(f"Successfully logged in as {self.__username}.")
 
     @property
     def username(self):
@@ -146,9 +146,9 @@ class Session:
     def post(self, url, json_data):
         try:
             return self.__session.post(url, json=json_data)
-        except requests.RequestException as e:
+        except requests.RequestException as ex:
             print(f"{url} seems to be offline.")
-            print(f"Server responded with: {e}")
+            print(f"Server responded with: {ex}")
             print("Please contact server administrator")
             exit(1)
 
@@ -171,7 +171,7 @@ class Updater:
             print("Please contact server administrator.")
             return
         if r.text != VERSION:
-            print("Detected update.")
+            print("Updating..")
             r = session.get(f"{EXAM_URL}/cli/download")
             if r.status_code != 200:
                 print("Failed to get CLI update.")
@@ -200,13 +200,8 @@ class SSH:
     exam_id: str = None
 
     def __post_init__(self):
+        print("Joining exam..")
         res = session.get(f"{EXAM_URL}?key={urllib.parse.quote_plus(self.get_public_key())}")
-
-        if res.status_code == 201:
-            print(
-                f"Added public key, you can now connect to the server via: "
-                f"ssh -p {EXAM_SSH_PORT} -o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} {session.username}@{EXAM_SSH}")
-            exit(0)
 
         if res.status_code != 200:
             print(f"Failed to contact exam server at {EXAM_URL}")
@@ -216,15 +211,12 @@ class SSH:
 
         self.exam_id = res.text
         print(f"Participating in exam '{self.exam_id}'.")
-        print("Mounting network directory with exam files.")
+        print("Mounting network directory..")
         self.mount_folder()
-        print("Opening development environment.")
+        print("Opening development environment..")
         self.open_vs_code()
-        print("Done!")
-        print("You should now see the code editor and exam files inside it.")
-        print("If something seems wrong please immediately contact administrator.")
-        print("Keep this terminal minimized for potential debugging.")
-        print(f"Good luck! :)")
+        print("All operations succeeded.")
+        print("Good luck with the exam! :)")
         exit(0)
 
     def mount_folder(self):
@@ -282,7 +274,7 @@ class SSH:
                 print("Please contact administrator.")
                 print(f"Error: {out}")
                 exit(1)
-            print("Generated new key pair.")
+            print("Generating key pair..")
             return self.get_public_key()
         else:
             if not os.path.isfile(os.path.expanduser(f"~/.ssh/{session.username}")):
@@ -290,6 +282,7 @@ class SSH:
                 return self.get_public_key()
             else:
                 with open(os.path.expanduser(f"~/.ssh/{session.username}.pub"), "r", encoding="utf-8") as key:
+
                     return key.read()
         # unreachable
 
