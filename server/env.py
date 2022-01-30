@@ -19,10 +19,3 @@ class Env:
     @staticmethod
     def get_bool(key: str, required: bool = True) -> bool:
         return Env.get(key, "False", required).lower() in ('true', '1', 't')
-
-    @staticmethod
-    def get_int(key: str, required: bool = True):
-        try:
-            return int(Env.get(key, required=required))
-        except ValueError:
-            return None

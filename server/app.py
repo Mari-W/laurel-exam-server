@@ -34,11 +34,12 @@ def create_app():
     # init oauth client
     init_oauth(app)
 
-    # init users
-    for user in os.listdir("/app/users/"):
-        subprocess.run(f"useradd -m -g student -s /bin/bash -K UID_MIN=3000 {user}", stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE,
-                       shell=True,
-                       encoding="utf-8")
+    # recreate users with home directories on start
+    for user in os.listdir("/home/"):
+        if os.path.isdir(f"/home/{user}/"):
+            subprocess.run(f"useradd -m -g student -s /bin/bash -K UID_MIN=3000 {user}", stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE,
+                           shell=True,
+                           encoding="utf-8")
 
     return app
