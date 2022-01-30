@@ -33,7 +33,7 @@ def home():
     # user does not exist, create it
     user_exists, _ = _exec(f"id -u {username}")
     if not user_exists:
-        # create either admin or restricted user
+        # create user
         user_created, err = _exec(f"useradd -m -g student -s /bin/bash -K UID_MIN=3000 {username}")
         if not user_created:
             return f"failed to create user {username}: {err}", 500
