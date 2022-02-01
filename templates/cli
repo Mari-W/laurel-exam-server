@@ -226,8 +226,8 @@ class SSH:
                 copied, err = self.exec(
                     f"scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
                     f"-o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
-                    f"-r -P  {EXAM_SSH_PORT}"
-                    f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id} "
+                    f"-r -P  {EXAM_SSH_PORT} "
+                    f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id}/* "
                     f"{os.path.expanduser(f'~/{self.exam_id}-server-state')}")
                 if not copied:
                     print("Failed to copy server directory.")
