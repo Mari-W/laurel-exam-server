@@ -11,6 +11,7 @@ REQUIRED PYTHON3 LIBRARY:   `requests`
 """
 import json
 import os.path
+import shutil
 import signal
 import subprocess
 import sys
@@ -219,7 +220,7 @@ class SSH:
                 self.exam_id = res.text
 
                 if os.path.isdir(os.path.expanduser(f"~/{self.exam_id}-server-state")):
-                    os.remove(os.path.expanduser(f"~/{self.exam_id}-server-state"))
+                    shutil.rmtree(os.path.expanduser(f"~/{self.exam_id}-server-state"))
                 os.makedirs(os.path.expanduser(f"~/{self.exam_id}-server-state"))
                 print("Copying directory from server..")
                 copied, err = self.exec(
