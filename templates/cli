@@ -203,44 +203,15 @@ class SSH:
     def __post_init__(self):
         if len(sys.argv) > 1:
             if sys.argv[1] == "logout":
-                if os.path.isfile(".cli.store.json"):
-                    print("Removing mountpoint..")
-                    self.exec(f"fusermount -u {os.path.expanduser(f'~/{self.exam_id}')}")
-                    print("Logging out..")
-                    os.remove(".cli.store.json")
-                    print("Done.")
+                self.logout()
                 exit(0)
             elif sys.argv[1] == "verify":
-                res = session.get(f"{EXAM_URL}/exam")
-                if res.status_code != 200:
-                    print(f"Failed to contact exam server at {EXAM_URL}")
-                    print(f"Server responded with: {res.text}")
-                    print("Please contact server administrator")
-                    exit(1)
-                self.exam_id = res.text
-
-                if os.path.isdir(os.path.expanduser(f"~/{self.exam_id}-server-state")):
-                    shutil.rmtree(os.path.expanduser(f"~/{self.exam_id}-server-state"))
-                os.makedirs(os.path.expanduser(f"~/{self.exam_id}-server-state"))
-                print("Copying directory from server..")
-                copied, err = self.exec(
-                    f"scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
-                    f"-o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
-                    f"-r -P  {EXAM_SSH_PORT} "
-                    f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id}/* "
-                    f"{os.path.expanduser(f'~/{self.exam_id}-server-state')}")
-                if not copied:
-                    print("Failed to copy server directory.")
-                    print("Please contact administrator.")
-                    print(f"Error: {err}")
-                    exit(1)
-                print("Opening copied folder in development environment..")
-                self.open_vs_code(f"{self.exam_id}-server-state")
-                print("All operations succeeded.")
-                print("You should now see your entire exam exactly as you left it in your IDE.")
+                self.verify()
                 exit(0)
+        self.join()
+        exit(0)
 
-
+    def join(self):
         print("Joining exam..")
         res = session.get(f"{EXAM_URL}?key={urllib.parse.quote_plus(self.get_public_key())}")
 
@@ -259,6 +230,44 @@ class SSH:
         print("All operations succeeded.")
         print("Good luck with the exam! :)")
         exit(0)
+
+    def verify(self):
+        res = session.get(f"{EXAM_URL}/exam")
+        if res.status_code != 200:
+            print(f"Failed to contact exam server at {EXAM_URL}")
+            print(f"Server responded with: {res.text}")
+            print("Please contact server administrator")
+            exit(1)
+        self.exam_id = res.text
+
+        if os.path.isdir(os.path.expanduser(f"~/{self.exam_id}-server-state")):
+            shutil.rmtree(os.path.expanduser(f"~/{self.exam_id}-server-state"))
+        os.makedirs(os.path.expanduser(f"~/{self.exam_id}-server-state"))
+        print("Copying directory from server..")
+        copied, err = self.exec(
+            f"scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
+            f"-o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
+            f"-r -P  {EXAM_SSH_PORT} "
+            f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id}/* "
+            f"{os.path.expanduser(f'~/{self.exam_id}-server-state')}")
+        if not copied:
+            print("Failed to copy server directory.")
+            print("Please contact administrator.")
+            print(f"Error: {err}")
+            exit(1)
+        print("Opening copied folder in development environment..")
+        self.open_vs_code(f"{self.exam_id}-server-state")
+        print("All operations succeeded.")
+        print("You should now see your entire exam exactly as you left it in your IDE.")
+        exit(0)
+
+    def logout(self):
+        print("Try removing mountpoint..")
+        self.exec(f"fusermount -u {os.path.expanduser(f'~/{self.exam_id}')}")
+        if os.path.isfile(".cli.store.json"):
+            print("Logging out..")
+            os.remove(".cli.store.json")
+        print("Done.")
 
     def mount_folder(self):
         sshfs_installed, err = self.exec("dpkg -l | grep sshfs")
