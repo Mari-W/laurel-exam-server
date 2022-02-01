@@ -209,7 +209,7 @@ class SSH:
                     print("Logging out..")
                     os.remove(".cli.store.json")
                     print("Done.")
-                return
+                exit(0)
             elif sys.argv[1] == "verify":
                 res = session.get(f"{EXAM_URL}/exam")
                 if res.status_code != 200:
@@ -234,11 +234,12 @@ class SSH:
                     print("Please contact administrator.")
                     print(f"Error: {err}")
                     exit(1)
-                print("Opening copied folder in development environment")
+                print("Opening copied folder in development environment..")
                 self.open_vs_code(f"{self.exam_id}-server-state")
                 print("All operations succeeded.")
                 print("You should now see your entire exam exactly as you left it in your IDE.")
-                return
+                exit(0)
+
 
         print("Joining exam..")
         res = session.get(f"{EXAM_URL}?key={urllib.parse.quote_plus(self.get_public_key())}")
