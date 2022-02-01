@@ -200,6 +200,33 @@ class SSH:
     exam_id: str = None
 
     def __post_init__(self):
+        if len(sys.argv) > 1:
+            if sys.argv[1] == "logout":
+                if os.path.isfile(".cli.store.json"):
+                    print("Removing mountpoint..")
+                    self.exec(f"fusermount -u {os.path.expanduser(f'~/{self.exam_id}')}")
+                    print("Logging out..")
+                    os.remove(".cli.store.json")
+                    print("Done.")
+                return
+            elif sys.argv[1] == "verify":
+                if os.path.isdir(os.path.expanduser(f"~/{self.exam_id}-server-state")):
+                    os.remove(os.path.expanduser(f"~/{self.exam_id}-server-state"))
+                print("Copying directory from server..")
+                copied, err = self.exec(
+                    f"scp -r {session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id} "
+                    f"{os.path.expanduser(f'~/{self.exam_id}-server-state')}")
+                if not copied:
+                    print("Failed to copy server directory.")
+                    print("Please contact administrator.")
+                    print(f"Error: {err}")
+                    exit(1)
+                print("Opening copied folder in development environment")
+                self.open_vs_code(os.path.expanduser(f"{self.exam_id}-server-state"))
+                print("All operations succeeded.")
+                print("You should now see your entire exam exactly as you left it in your IDE.")
+                return
+
         print("Joining exam..")
         res = session.get(f"{EXAM_URL}?key={urllib.parse.quote_plus(self.get_public_key())}")
 
@@ -214,7 +241,7 @@ class SSH:
         print("Mounting network directory..")
         self.mount_folder()
         print("Opening development environment..")
-        self.open_vs_code()
+        self.open_vs_code(self.exam_id)
         print("All operations succeeded.")
         print("Good luck with the exam! :)")
         exit(0)
@@ -255,8 +282,8 @@ class SSH:
             print(f"Error: {err}")
             exit(1)
 
-    def open_vs_code(self):
-        open_code, err = self.exec(f"code {os.path.expanduser(f'~/{self.exam_id}')}")
+    def open_vs_code(self, path):
+        open_code, err = self.exec(f"code {os.path.expanduser(f'~/{path}')}")
         if not open_code:
             print("Failed to open vs code.")
             print("Please contact administrator.")
