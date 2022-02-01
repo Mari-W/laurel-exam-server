@@ -224,7 +224,7 @@ class SSH:
                     print(f"Error: {err}")
                     exit(1)
                 print("Opening copied folder in development environment")
-                self.open_vs_code(os.path.expanduser(f"{self.exam_id}-server-state"))
+                self.open_vs_code(f"{self.exam_id}-server-state")
                 print("All operations succeeded.")
                 print("You should now see your entire exam exactly as you left it in your IDE.")
                 return
