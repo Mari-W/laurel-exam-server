@@ -220,6 +220,7 @@ class SSH:
 
                 if os.path.isdir(os.path.expanduser(f"~/{self.exam_id}-server-state")):
                     os.remove(os.path.expanduser(f"~/{self.exam_id}-server-state"))
+                os.makedirs(os.path.expanduser(f"~/{self.exam_id}-server-state"))
                 print("Copying directory from server..")
                 copied, err = self.exec(
                     f"scp -r -p {EXAM_SSH_PORT} -o StrictHostKeyChecking=accept-new,"
