@@ -325,9 +325,6 @@ class SSH:
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, lambda _, __: None)
     # order matters here as global objects get created, most of the time used by objects below them
-    if "logout" in sys.argv:
-        if os.path.isfile(".cli.store.json"):
-            os.remove(".cli.store.json")
 
     # create cli store where authentication token is stored
     store = Store()
