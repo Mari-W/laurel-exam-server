@@ -214,7 +214,9 @@ class SSH:
                     os.remove(os.path.expanduser(f"~/{self.exam_id}-server-state"))
                 print("Copying directory from server..")
                 copied, err = self.exec(
-                    f"scp -r {session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id} "
+                    f"scp -r -p {EXAM_SSH_PORT} -o StrictHostKeyChecking=accept-new,"
+                    f"IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
+                    f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id} "
                     f"{os.path.expanduser(f'~/{self.exam_id}-server-state')}")
                 if not copied:
                     print("Failed to copy server directory.")
