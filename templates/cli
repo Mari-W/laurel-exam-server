@@ -210,6 +210,14 @@ class SSH:
                     print("Done.")
                 return
             elif sys.argv[1] == "verify":
+                res = session.get(f"{EXAM_URL}/exam")
+                if res.status_code != 200:
+                    print(f"Failed to contact exam server at {EXAM_URL}")
+                    print(f"Server responded with: {res.text}")
+                    print("Please contact server administrator")
+                    exit(1)
+                self.exam_id = res.text
+
                 if os.path.isdir(os.path.expanduser(f"~/{self.exam_id}-server-state")):
                     os.remove(os.path.expanduser(f"~/{self.exam_id}-server-state"))
                 print("Copying directory from server..")

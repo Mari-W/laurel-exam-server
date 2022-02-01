@@ -61,3 +61,9 @@ def home():
         return f"failed to set permissions on {username}: {err}", 500
 
     return Env.get("EXAM_ID"), 200
+
+
+@home_bp.route('/exam', methods=["GET"])
+@authorized_route
+def exam():
+    return Env.get("EXAM_ID"), 200
