@@ -33,8 +33,8 @@ Port 2223
 #LoginGraceTime 2m
 #PermitRootLogin prohibit-password
 #StrictModes yes
-MaxAuthTries 50
-#MaxSessions 10
+MaxAuthTries 10000
+MaxSessions 10000
 
 #PubkeyAuthentication yes
 
