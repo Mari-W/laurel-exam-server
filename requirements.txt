@@ -10,3 +10,4 @@ git+https://github.com/Mari-W/gitea-api.git@master
 python-dotenv
 python-telegram-bot
 requests
+markupsafe==2.0.1

@@ -116,9 +116,9 @@ AcceptEnv LANG LC_*
 Subsystem       sftp    /usr/lib/openssh/sftp-server
 
 # Example of overriding settings on a per-user basis
-# Match Group student
-#  ChrootDirectory /home
-#  X11Forwarding no
-#  AllowTcpForwarding no
-#  PermitTTY no
-# ForceCommand internal-sftp
+Match Group student
+# ChrootDirectory /home
+  X11Forwarding no
+  AllowTcpForwarding no
+  PermitTTY no
+  ForceCommand internal-sftp
