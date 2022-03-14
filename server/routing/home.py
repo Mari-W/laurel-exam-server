@@ -56,7 +56,7 @@ def home():
 
     # set permissions for folders accordingly
     perms, err = _exec(f"chown -R {username}:student /home/{username} && "
-                       f"chmod -R 700 /home/{username}")
+                       f"chmod -R {700 if Env.get_bool('READ_ONLY', required=False) else 500} /home/{username}")
     if not perms:
         return f"failed to set permissions on {username}: {err}", 500
 
