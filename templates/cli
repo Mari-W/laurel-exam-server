@@ -43,7 +43,7 @@ AUTH_COOKIE = os.environ.get("AUTH_COOKIE", "{{auth_cookie}}")
 EXAM_URL = os.environ.get("EXAM_URL", "{{exam_url}}")
 EXAM_SSH = os.environ.get("EXAM_SSH", "{{exam_ssh}}")
 EXAM_SSH_PORT = os.environ.get("EXAM_SSH_PORT", "{{exam_ssh_port}}")
-
+READ_ONLY = {{read_only}}
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -298,7 +298,7 @@ class SSH:
             self.exec(f"fusermount -u {os.path.expanduser(f'~/{self.exam_id}')}")
 
         mounted, err = self.exec(
-            f"sshfs -o reconnect,ServerAliveInterval=10,ServerAliveCountMax=0,StrictHostKeyChecking=no,ro,"
+            f"sshfs -o reconnect,ServerAliveInterval=10,ServerAliveCountMax=0,StrictHostKeyChecking=no,{'ro,' if READ_ONLY else ''}"
             f"IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
             f"-p {EXAM_SSH_PORT} "
             f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id} "
