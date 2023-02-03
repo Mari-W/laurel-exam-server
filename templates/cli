@@ -259,13 +259,13 @@ class SSH:
 
         if not copied:
             if "mountpoint is not empty" in err:
-                unmount, err = self.exec(f"fusermount -u {os.path.expanduser(f'~/{self.exam_id}')}")
+                unmount, err = self.exec(f"fusermount -u {os.path.expanduser(f'~/{self.exam_id}')}-server-state")
                 if not unmount:
                     print("Failed to unmount server directory.")
                     print("Please contact administrator.")
                     print(f"Error: {err}")
                     exit(1)
-                return self.mount_folder()
+                return self.verify()
             print("Failed to mount server directory.")
             print("Please contact administrator.")
             print(f"Error: {err}")
