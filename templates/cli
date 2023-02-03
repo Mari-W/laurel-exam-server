@@ -240,18 +240,33 @@ class SSH:
             exit(1)
         self.exam_id = res.text
 
-        if os.path.isdir(os.path.expanduser(f"~/{self.exam_id}-server-state")):
-            shutil.rmtree(os.path.expanduser(f"~/{self.exam_id}-server-state"))
-        os.makedirs(os.path.expanduser(f"~/{self.exam_id}-server-state"))
+        if not os.path.isdir(os.path.expanduser(f"~/{self.exam_id}-server-state")):
+            try:
+                os.makedirs(os.path.expanduser(f"~/{self.exam_id}-server-state"))
+            except FileExistsError:
+                self.exec(f"fusermount -u {os.path.expanduser(f'~/{self.exam_id}-server-state')}")
+        else:
+            self.exec(f"fusermount -u {os.path.expanduser(f'~/{self.exam_id}')}-server-state")
+        
         print("Copying directory from server..")
+
         copied, err = self.exec(
-            f"scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
-            f"-o IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
-            f"-r -P  {EXAM_SSH_PORT} "
-            f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id}/* "
+            f"sshfs -o reconnect,ServerAliveInterval=10,ServerAliveCountMax=0,StrictHostKeyChecking=no,ro,"
+            f"IdentityFile={os.path.expanduser(f'~/.ssh/{session.username}.pub')} "
+            f"-p {EXAM_SSH_PORT} "
+            f"{session.username}@{EXAM_SSH}:/home/{session.username}/{self.exam_id} "
             f"{os.path.expanduser(f'~/{self.exam_id}-server-state')}")
+
         if not copied:
-            print("Failed to copy server directory.")
+            if "mountpoint is not empty" in err:
+                unmount, err = self.exec(f"fusermount -u {os.path.expanduser(f'~/{self.exam_id}')}")
+                if not unmount:
+                    print("Failed to unmount server directory.")
+                    print("Please contact administrator.")
+                    print(f"Error: {err}")
+                    exit(1)
+                return self.mount_folder()
+            print("Failed to mount server directory.")
             print("Please contact administrator.")
             print(f"Error: {err}")
             exit(1)
