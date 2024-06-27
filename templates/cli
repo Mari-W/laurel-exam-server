@@ -177,7 +177,7 @@ class Updater:
             file.write(r.text)
         print("Update successful.")
         # restart with same arguments, as applied on this script call
-        os.execv(sys.argv[0], sys.argv)
+        os.execv(sys.argv[0], sys.argv + ["noupdate"])
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -194,6 +194,9 @@ class SSH:
     exam_id: str = None
 
     def __post_init__(self):
+        if not "noupdate" in sys.argv:
+            Updater()
+
         if len(sys.argv) > 1:
             if sys.argv[1] == "logout":
                 self.logout()
@@ -363,9 +366,6 @@ if __name__ == '__main__':
 
     # session which will ensure you are authorized after it's creation
     session = Session()  # uses: store
-
-    # run updater
-    Updater()
 
     # actual logic and communicating with courses server
     ssh = SSH()  # uses: session, git
