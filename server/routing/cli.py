@@ -6,6 +6,12 @@ from server.routing.decorators import authorized_route
 cli_bp = Blueprint("cli", __name__)
 
 
+@cli_bp.route("/version")
+@authorized_route
+def version():
+    return "depricated - left for backwards compatibility", 200
+
+
 @cli_bp.route("/download")
 def download():
     cli = render_template("cli",
