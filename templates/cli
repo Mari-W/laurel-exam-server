@@ -271,7 +271,7 @@ class SSH:
             print(f"Error: {err}")
             exit(1)
 
-        """ for file in os.listdir(os.path.expanduser(f'~/{self.exam_id}-server-state')):
+        for file in os.listdir(os.path.expanduser(f'~/{self.exam_id}-server-state')):
             if file.endswith(".py"):
                 if os.path.isfile(os.path.expanduser(f'~/{self.exam_id}-server-state/{file}')):
                     with open(os.path.expanduser(f'~/{self.exam_id}-server-state/{file}'), "r") as f:
@@ -281,8 +281,7 @@ class SSH:
                                     "# THIS IS A *COPY* OF YOUR SUBMISSION ON OUR SERVER. \n"
                                     "# CHANGES TO THIS FILE WILL *NOT* BE SUBMITTED.\n\n\n")
                             f.write(content)
-        """
-        
+
         print("Opening copied folder in development environment..")
         self.open_vs_code(f"{self.exam_id}-server-state")
         print("All operations succeeded.")
