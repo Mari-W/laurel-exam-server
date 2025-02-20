@@ -15,7 +15,7 @@ def login():
 @auth_bp.route('/callback')
 def callback():
     token = oauth.auth.authorize_access_token()
-    user = oauth.auth.parse_id_token(token)
+    user = token["userinfo"]
 
     if not user:
         return "failed to authenticate", 500
